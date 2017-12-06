@@ -41,6 +41,17 @@ LuaInterface::LuaInterface(Host* pH) : mpHost(pH), L(), depth()
     varUnit.reset(new VarUnit());
     //set our panic function
     lua_atpanic(interpreter->pGlobalLua, &onPanic);
+
+    // prepend profile path to package.path and package.cpath
+    lua_State* LS = interpreter->pGlobalLua;
+
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    luaL_dostring(LS, QString("package.path = getMudletHomeDir() .. '/?;' .. package.path").toUtf8().constData());
+    luaL_dostring(LS, QString("package.cpath = getMudletHomeDir() .. '/?;' .. package.cpath").toUtf8().constData());
+#else
+    luaL_dostring(LS, QString("package.path = getMudletHomeDir() .. '\\\\?;' .. package.path").toUtf8().constData());
+    luaL_dostring(LS, QString("package.cpath = getMudletHomeDir() .. '\\\\?;' .. package.cpath").toUtf8().constData());
+#endif
 }
 
 LuaInterface::~LuaInterface()
