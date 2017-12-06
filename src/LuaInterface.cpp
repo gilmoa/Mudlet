@@ -46,12 +46,13 @@ LuaInterface::LuaInterface(Host* pH) : mpHost(pH), L(), depth()
     lua_State* LS = interpreter->pGlobalLua;
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    luaL_dostring(LS, QString("package.path = getMudletHomeDir() .. '/?;' .. package.path").toUtf8().constData());
-    luaL_dostring(LS, QString("package.cpath = getMudletHomeDir() .. '/?;' .. package.cpath").toUtf8().constData());
+    QString sep = "/";
 #else
-    luaL_dostring(LS, QString("package.path = getMudletHomeDir() .. '\\\\?;' .. package.path").toUtf8().constData());
-    luaL_dostring(LS, QString("package.cpath = getMudletHomeDir() .. '\\\\?;' .. package.cpath").toUtf8().constData());
+    QString sep = "\\\\";
 #endif
+
+    luaL_dostring(LS, QString("package.path = getMudletHomeDir() .. '%1?;' .. package.path").arg(sep).toUtf8().constData());
+    luaL_dostring(LS, QString("package.cpath = getMudletHomeDir() .. '%1?;' .. package.cpath").arg(sep).toUtf8().constData());
 }
 
 LuaInterface::~LuaInterface()
